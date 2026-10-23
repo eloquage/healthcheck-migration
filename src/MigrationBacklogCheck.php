@@ -7,17 +7,25 @@ namespace IllumaLaw\HealthCheckMigration;
 use Illuminate\Support\Facades\Artisan;
 use Spatie\Health\Checks\Check;
 use Spatie\Health\Checks\Result;
+use Throwable;
 
 final class MigrationBacklogCheck extends Check
 {
     public function run(): Result
     {
-        Artisan::call('migrate:status', [
-            '--pending' => true,
-            '--no-ansi' => true,
-        ]);
+        try {
+            $exitCode = Artisan::call('migrate:status', [
+                '--pending' => true,
+                '--no-ansi' => true,
+            ]);
 
-        $output = Artisan::output();
+            $output = Artisan::output();
+        } catch (Throwable $exception) {
+            return Result::make()
+                ->failed(trans('healthcheck-migration::messages.query_failed', ['message' => $exception->getMessage()]))
+                ->shortSummary('Check failed');
+        }
+
         $lines = preg_split("/\r\n|\n|\r/", $output) ?: [];
         $pendingLines = collect($lines)
             ->map(fn (string $line): string => trim($line))
@@ -25,6 +33,12 @@ final class MigrationBacklogCheck extends Check
             ->values();
 
         $count = $pendingLines->count();
+
+        if ($count === 0 && $exitCode !== 0) {
+            return Result::make()
+                ->failed(trans('healthcheck-migration::messages.query_failed', ['message' => "Artisan exited with code {$exitCode}."]))
+                ->shortSummary('Check failed');
+        }
 
         $result = Result::make()
             ->meta([
@@ -34,7 +48,13 @@ final class MigrationBacklogCheck extends Check
             ->shortSummary("{$count} pending");
 
         if ($count > 0) {
-            return $result->failed("There are {$count} pending database migration(s).");
+            $message = trans('healthcheck-migration::messages.pending', ['count' => $count]);
+
+            if (filter_var(config('healthcheck-migration.required', false), FILTER_VALIDATE_BOOLEAN)) {
+                return $result->failed($message);
+            }
+
+            return $result->warning($message);
         }
 
         return $result->ok('No pending migrations.');
