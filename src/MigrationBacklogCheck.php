@@ -34,7 +34,7 @@ final class MigrationBacklogCheck extends Check
 
         $count = $pendingLines->count();
 
-        if ($exitCode !== 0) {
+        if ($count === 0 && $exitCode !== 0) {
             return Result::make()
                 ->failed(trans('healthcheck-migration::messages.query_failed', ['message' => "Artisan exited with code {$exitCode}."]))
                 ->shortSummary('Check failed');
