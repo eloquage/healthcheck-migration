@@ -37,7 +37,7 @@ it('fails when migrations are pending and the check is required', function () {
     config()->set('healthcheck-migration.required', true);
 
     $mock = Mockery::mock(Kernel::class);
-    $mock->shouldReceive('call')->once()->andReturn(1);
+    $mock->shouldReceive('call')->once()->andReturn(0);
     $mock->shouldReceive('output')->once()->andReturn("2023_01_01_000000_create_users_table Pending\n");
     assert($this->app !== null);
     $this->app->instance(Kernel::class, $mock);
@@ -46,6 +46,20 @@ it('fails when migrations are pending and the check is required', function () {
 
     expect($result->status)->toEqual(Status::failed())
         ->and($result->shortSummary)->toBe('1 pending');
+});
+
+it('fails when Artisan exits unsuccessfully even if pending rows were printed', function () {
+    $mock = Mockery::mock(Kernel::class);
+    $mock->shouldReceive('call')->once()->andReturn(1);
+    $mock->shouldReceive('output')->once()->andReturn("2023_01_01_000000_create_users_table Pending\n");
+    assert($this->app !== null);
+    $this->app->instance(Kernel::class, $mock);
+
+    $result = MigrationBacklogCheck::new()->run();
+
+    expect($result->status)->toEqual(Status::failed())
+        ->and($result->notificationMessage)->toContain('Artisan exited with code 1')
+        ->and($result->shortSummary)->toBe('Check failed');
 });
 
 it('fails closed when the migration status command cannot run', function () {
