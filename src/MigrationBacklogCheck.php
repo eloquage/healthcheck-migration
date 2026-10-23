@@ -18,7 +18,8 @@ final class MigrationBacklogCheck extends Check
         ]);
 
         $output = Artisan::output();
-        $pendingLines = collect(preg_split("/\r\n|\n|\r/", $output))
+        $lines = preg_split("/\r\n|\n|\r/", $output) ?: [];
+        $pendingLines = collect($lines)
             ->map(fn (string $line): string => trim($line))
             ->filter(fn (string $line): bool => str_ends_with($line, 'Pending'))
             ->values();
