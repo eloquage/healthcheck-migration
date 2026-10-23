@@ -2,24 +2,19 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\File;
-use Illuminate\Testing\PendingCommand;
+use IllumaLaw\HealthCheckMigration\HealthcheckMigrationServiceProvider;
+use Illuminate\Support\ServiceProvider;
 
-it('publishes the config file under the correct tag', function () {
-    $command = $this->artisan('vendor:publish', [
-        '--tag' => 'healthcheck-migration-config',
-        '--force' => true,
-    ]);
-
-    if ($command instanceof PendingCommand) {
-        $command->assertExitCode(0);
-    } else {
-        expect($command)->toBe(0);
+it('registers the config publish path under the correct tag', function () {
+    $provider = app()->getProvider(HealthcheckMigrationServiceProvider::class);
+    if (! ($provider instanceof HealthcheckMigrationServiceProvider)) {
+        throw new RuntimeException('The package service provider must be registered.');
     }
 
-    expect(config_path('healthcheck-migration.php'))->toBeFile();
+    $source = dirname(__DIR__).'/src/../config/healthcheck-migration.php';
 
-    File::delete(config_path('healthcheck-migration.php'));
+    expect(ServiceProvider::pathsToPublish($provider::class, 'healthcheck-migration-config'))
+        ->toBe([$source => config_path('healthcheck-migration.php')]);
 });
 
 it('loads config with the correct default', function () {
