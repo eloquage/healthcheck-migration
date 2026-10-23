@@ -1,32 +1,36 @@
-# Healthcheck migration for Laravel
+# Healthcheck Migration for Laravel
 
-[![Tests](https://github.com/eloquage/healthcheck-migration/actions/workflows/run-tests.yml/badge.svg)](https://github.com/eloquage/healthcheck-migration/actions)
-[![Packagist License](https://img.shields.io/badge/Licence-MIT-blue)](http://choosealicense.com/licenses/mit/)
+![Healthcheck Migration banner](art/banner.png)
+
+[![Tests](https://github.com/eloquage/healthcheck-migration/actions/workflows/run-tests.yml/badge.svg)](https://github.com/eloquage/healthcheck-migration/actions/workflows/run-tests.yml)
 [![Latest Stable Version](https://img.shields.io/packagist/v/illuma-law/healthcheck-migration?label=Version)](https://packagist.org/packages/illuma-law/healthcheck-migration)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
 
-A focused migration backlog health check for Spatie's [Laravel Health](https://spatie.be/docs/laravel-health/v1/introduction) package.
+A [Spatie Laravel Health](https://spatie.be/docs/laravel-health) check that lists pending database migrations and reports whether Artisan could read migration status.
 
-This package provides a simple, direct health check to verify that your application's database migrations are up to date.
+## Requirements
 
-## Features
-
-- **Pending Migration Check:** Automatically detects if there are any pending database migrations that haven't been run yet.
-- **Migration Count:** Reports the exact number of pending migrations in the health summary and meta data.
-- **Detailed Meta:** Lists a sample of pending migration filenames for easier debugging via JSON endpoints.
+- PHP 8.3 or later
+- Laravel 11, 12, or 13
+- `spatie/laravel-health` 1.39 or later
 
 ## Installation
 
-Require this package with composer:
-
-```shell
+```bash
 composer require illuma-law/healthcheck-migration
 ```
 
-## Usage & Integration
+Laravel discovers the service provider automatically. To customize whether pending migrations warn or fail, publish the configuration:
 
-Register the check inside your application's health service provider (e.g. `AppServiceProvider` or a dedicated `HealthServiceProvider`), alongside your other Spatie Laravel Health checks:
+```bash
+php artisan vendor:publish --tag=healthcheck-migration-config
+```
 
-### Basic Registration
+By default, pending migrations produce a warning. Set `HEALTH_MIGRATION_REQUIRED=true` to make a pending backlog fail the check. If Laravel cannot read migration status, the check always fails.
+
+## Usage
+
+Register the check in your health service provider:
 
 ```php
 use IllumaLaw\HealthCheckMigration\MigrationBacklogCheck;
@@ -37,21 +41,16 @@ Health::checks([
 ]);
 ```
 
-### Expected Result States
-
-The check interacts with the Spatie Health dashboard and JSON endpoints using these states:
-
-- **Ok:** All database migrations have been successfully applied.
-- **Failed:** One or more database migrations are pending.
+The result includes `pending_count` and up to eight pending migration rows in its metadata. No pending migrations returns **OK**, pending migrations return **Warning** by default or **Failed** when required, and an Artisan/database error returns **Failed**.
 
 ## Testing
 
-Run the test suite:
-
-```shell
+```bash
 composer test
+composer analyse
+vendor/bin/pint --test
 ```
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+MIT. See [LICENSE.md](LICENSE.md).
