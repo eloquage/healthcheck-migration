@@ -1,6 +1,6 @@
 # Healthcheck migration for Laravel
 
-[![Tests](https://github.com/illuma-law/healthcheck-migration/actions/workflows/run-tests.yml/badge.svg)](https://github.com/illuma-law/healthcheck-migration/actions)
+[![Tests](https://github.com/eloquage/healthcheck-migration/actions/workflows/run-tests.yml/badge.svg)](https://github.com/eloquage/healthcheck-migration/actions)
 [![Packagist License](https://img.shields.io/badge/Licence-MIT-blue)](http://choosealicense.com/licenses/mit/)
 [![Latest Stable Version](https://img.shields.io/packagist/v/illuma-law/healthcheck-migration?label=Version)](https://packagist.org/packages/illuma-law/healthcheck-migration)
 
