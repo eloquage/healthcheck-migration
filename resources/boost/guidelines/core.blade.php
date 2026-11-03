@@ -1,4 +1,4 @@
-# illuma-law/healthcheck-migration
+# eloquage/healthcheck-migration
 
 Checks if the `vector` extension (migration) is enabled and active in PostgreSQL.
 

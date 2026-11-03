@@ -1,5 +1,5 @@
 {
-    "name": "illuma-law/healthcheck-migration",
+    "name": "eloquage/healthcheck-migration",
     "description": "Focused migration backlog health check for Spatie's Laravel Health package.",
     "keywords": [
         "illuma-law",
