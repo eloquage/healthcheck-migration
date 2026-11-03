@@ -3,7 +3,7 @@
 ![Healthcheck Migration banner](art/banner.png)
 
 [![Tests](https://github.com/eloquage/healthcheck-migration/actions/workflows/run-tests.yml/badge.svg)](https://github.com/eloquage/healthcheck-migration/actions/workflows/run-tests.yml)
-[![Latest Stable Version](https://img.shields.io/packagist/v/illuma-law/healthcheck-migration?label=Version)](https://packagist.org/packages/illuma-law/healthcheck-migration)
+[![Latest Stable Version](https://img.shields.io/packagist/v/eloquage/healthcheck-migration?label=Version)](https://packagist.org/packages/eloquage/healthcheck-migration)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
 
 A [Spatie Laravel Health](https://spatie.be/docs/laravel-health) check that lists pending database migrations and reports whether Artisan could read migration status.
@@ -17,7 +17,7 @@ A [Spatie Laravel Health](https://spatie.be/docs/laravel-health) check that list
 ## Installation
 
 ```bash
-composer require illuma-law/healthcheck-migration
+composer require eloquage/healthcheck-migration
 ```
 
 Laravel discovers the service provider automatically. To customize whether pending migrations warn or fail, publish the configuration:
